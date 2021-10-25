@@ -7,18 +7,19 @@ using System.Diagnostics;
 namespace Keyboard_Logger{
     public class Key{
 
-        Int32 ascii;
-
-        Char buttonChar;
+        public Int32 ascii {get; set;}
+        private Char buttonChar {get; set;}
         private bool isKeyDown = false;
-        private int keyCount = 0;
-        private double totalTimePressed = 0;
+        public int keyCount {get; set;}
+        public double totalTimePressed {get; set;}
 
-        Stopwatch stopWatch;
+        private Stopwatch stopWatch;
 
-        public Key(Int32 i){
-            ascii = i;
-            buttonChar = (char) i;
+        public Key(Int32 Ascii, int keycount, double totaltimepressed){
+            ascii = Ascii;
+            buttonChar = (char) Ascii;
+            keyCount = keycount;
+            totalTimePressed = totaltimepressed;
         }
 
         public void pressed(){
@@ -39,14 +40,45 @@ namespace Keyboard_Logger{
                 stopWatch.Stop();
                 isKeyDown = false;
                 TimeSpan timeSpan = stopWatch.Elapsed;
-                double ms = timeSpan.Milliseconds;
-                double s = timeSpan.Seconds;
+                double ms = timeSpan.TotalMilliseconds;
                 totalTimePressed += ms;
                 Console.WriteLine("");
-                Console.WriteLine(buttonChar + " click lasted for: " +s+" "+ ms + "ms");
-                Console.WriteLine(buttonChar + " average click time: " + (int) totalTimePressed/keyCount + "ms");
+                Console.WriteLine(buttonChar + " click lasted for: " + clickTime(ms));
+                Console.WriteLine(buttonChar + " average click time: " + averageClickTime());
                 
             }
+        }
+
+        private string averageClickTime(){
+            int avg = (int) totalTimePressed/keyCount;
+            string avgString = "";
+            if(avg < 1000){
+                avgString += avg;
+                return (avgString+"ms");
+            }
+            else{
+                avgString += avg/1000;
+                return (avgString+"s");
+            }
+        }
+
+        private string clickTime(double ms){
+            int click = (int) ms;
+            string clickString = "";
+            if(click < 1000){
+                clickString += click;
+                return (clickString+"ms");
+            }
+            else{
+                clickString += click/1000;
+                return (clickString+"s");
+            }
+        }
+
+        public void printKeyInfo(){
+            Console.WriteLine("Key: " + this.ascii);
+            Console.WriteLine("Total times pressed: " + this.keyCount);
+            Console.WriteLine("Average time pressed: " + totalTimePressed/keyCount + "ms");
         }
     }
 }
